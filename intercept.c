@@ -12,7 +12,7 @@ void** sys_call_table = NULL;
 // TODO: import original syscall and write new syscall
 
 void find_sys_call_table(int scan_range) {
-   unsigned long **sysCallTable;
+   
    unsigned long ptrAsNum=(unsigned long)&system_utsname;
    int i=0;
    unsigned long *ptr;
@@ -26,12 +26,12 @@ void find_sys_call_table(int scan_range) {
      {
 		ptrAsNum -= sizeof(void *)*3;  //since sys_read is number 3 in the table
 		 ptr = (unsigned long *)ptrAsNum;
-        sysCallTable = (unsigned long **)ptr;  
-		return &sysCallTable[0];
+        sys_call_table = (unsigned long **)ptr;  
+		
      }
    }
 
-   return NULL;
+   
 }
 
 int init_module(void) {
