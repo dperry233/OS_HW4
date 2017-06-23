@@ -19,12 +19,14 @@ void find_sys_call_table(int scan_range) {
    sysCallTable = NULL;
    for (i=0; i<scan_range,i++)
    {
-	 ptrAsNum += sizeof(void *)
+	 ptrAsNum += sizeof(void *);
 	 ptr = (unsigned long *)ptrAsNum;
 	  
      if (ptr == &sys_read())
      {
-        sysCallTable = (unsigned long **)ptr;  //read is actually number 3, so might want to return num0 or num1
+		ptrAsNum -= sizeof(void *)*3;  //since sys_read is number 3 in the table
+		 ptr = (unsigned long *)ptrAsNum;
+        sysCallTable = (unsigned long **)ptr;  
 		return &sysCallTable[0];
      }
    }
