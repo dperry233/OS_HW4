@@ -34,26 +34,26 @@ void find_sys_call_table(int scan_range) {
    
 }
 
-//this is just a test syscall (which is getpid) should be changed to unlink
-asmlinkage long (*original_sys_getpid)(void);
-asmlinkage long our_sys_getpid(void) {
-    printk("sys_getpid was called\n");
+
+asmlinkage long (*original_sys_unlink)(void);
+asmlinkage long our_sys_unlink(void) {
+    printk("sys_unlink was called\n");//temporary
     /*call original syscall and return its value*/
-    return original_sys_getpid();
+    return original_sys_unlink();
 }
 
 
 int init_module(void) {
    // TODO: complete the function
    find_sys_call_table(scan_range);
-   original_sys_getpid=sys_call_table[__NR_getpid];
-   sys_call_table[__NR_getpid]=our_sys_getpid;
+   original_sys_unlink=sys_call_table[__NR_unlink];
+   sys_call_table[__NR_unlink]=our_sys_unlink;
    return 0;
 }
 
 void cleanup_module(void) {
    // TODO: complete the function
 
-   sys_call_table[__NR_getpid] = original_sys_getpid;
+   sys_call_table[__NR_unlink] = original_sys_unlink;
 }
 
