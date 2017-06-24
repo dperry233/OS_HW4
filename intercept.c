@@ -6,12 +6,15 @@
 #include <linux/syscall.h>
 MODULE_LICENSE("GPL");
 
+#define MAX_PATH_LENGTH 100
 // TODO: add command-line arguments
 void** sys_call_table = NULL;
 
-// TODO: import original syscall and write new syscall
 int scan_range=150;
 MODULE_PARM(scan_range,"i");
+char* filepath = "";
+// TODO: import original syscall and write new syscall
+MODULE_PARM(filepath,"s");
 void find_sys_call_table(int scan_range) {
    unsigned long ptrAsNum=(unsigned long)&system_utsname;
    int i=0;
@@ -35,11 +38,16 @@ void find_sys_call_table(int scan_range) {
 }
 
 
-asmlinkage long (*original_sys_unlink)(void);
-asmlinkage long our_sys_unlink(void) {
-    printk("sys_unlink was called\n");//temporary
-    /*call original syscall and return its value*/
-    return original_sys_unlink();
+asmlinkage long (*original_sys_unlink)(const char* pathname);
+asmlinkage long our_sys_unlink(const char* pathname) {
+
+	if(!strncmp(filepath,pathname,MAX_PATH_LENGTH)){
+		return -EACCES;
+	}else{
+	    /*call original syscall and return its value*/
+		return original_sys_unlink(pathname);
+	}
+
 }
 
 
