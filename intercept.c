@@ -10,28 +10,30 @@ MODULE_LICENSE("GPL");
 void** sys_call_table = NULL;
 
 // TODO: import original syscall and write new syscall
-int scan_range;
+int scan_range=150;
 MODULE_PARM(scan_range,"i");
 void find_sys_call_table(int scan_range) {
-   
+   //printk("scan range is %d\n",scan_range);//dbg
    unsigned long ptrAsNum=(unsigned long)&system_utsname;
    int i=0;
    unsigned long *ptr;
    sys_call_table = NULL;
    for (i=0; i<scan_range; i++)
    {
+	//printk("i is %d\n",i);//dbg
 	 ptrAsNum += sizeof(void *);
 	 ptr = (unsigned long *)ptrAsNum;
 	  
-     if (ptr == (unsigned long *)&sys_read)
+     if (ptr[__NR_read] == (unsigned long )sys_read)
      {
 		ptrAsNum -= sizeof(void *)*__NR_read;  
 		 ptr = (unsigned long *)ptrAsNum;
-        sys_call_table = (void **)ptr;  
-		
+        sys_call_table = (void **)ptr; 
+		//printk("successfully found sys_call_table\n");//dbg
+		return;
      }
    }
-   printk("scan_range to low ,didnt find sys_call_table\n");
+   //printk("scan_range too low ,didnt find sys_call_table\n");
    
 }
 
